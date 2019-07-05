@@ -1,1 +1,3 @@
-# simplified version docker, can use for test, serverless
+# Introduction
+
+fdocker is a simplified version docker by self
