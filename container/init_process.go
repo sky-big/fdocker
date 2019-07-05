@@ -1,7 +1,6 @@
 package container
 
 import (
-	log "common/clog"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -11,9 +10,11 @@ import (
 	"syscall"
 	"time"
 
-	"fdocker/container/common"
-	"fdocker/container/config"
-	userOp "fdocker/container/user"
+	"github.com/sky-big/fdocker/container/common"
+	"github.com/sky-big/fdocker/container/config"
+	userOp "github.com/sky-big/fdocker/container/user"
+
+	"github.com/golang/glog"
 )
 
 const (
@@ -21,30 +22,30 @@ const (
 )
 
 func RunContainerInitProcess(containerName, user string) error {
-	log.Blog.Infof("containername : %s, user : %s", containerName, user)
+	glog.Infof("containername : %s, user : %s", containerName, user)
 	cmdArray, err := readUserCommand(containerName)
 	if cmdArray == nil || len(cmdArray) == 0 {
 		return fmt.Errorf("Run container get user command error %v, cmdArray is %v", err, cmdArray)
 	}
 
-	log.Blog.Infof("Run container cmd : %v", cmdArray)
+	glog.Infof("Run container cmd : %v", cmdArray)
 
 	// pivot root file system
 	setUpMount()
 
 	if err := userOp.SetUser(user); err != nil {
-		log.Blog.Errorf("Set User error %v", err)
+		glog.Errorf("Set User error %v", err)
 		return err
 	}
 
 	path, err := exec.LookPath(cmdArray[0])
 	if err != nil {
-		log.Blog.Errorf("Exec loop path error %v", err)
+		glog.Errorf("Exec loop path error %v", err)
 		return err
 	}
-	log.Blog.Infof("Find path %s", path)
+	glog.Infof("Find path %s", path)
 	if err := syscall.Exec(path, cmdArray[0:], os.Environ()); err != nil {
-		log.Blog.Errorf(err.Error())
+		glog.Errorf(err.Error())
 	}
 	return nil
 }
@@ -56,7 +57,7 @@ func readUserCommand(containerName string) ([]string, error) {
 		if common.CheckFileIsExist(filePath) {
 			b, err := ioutil.ReadFile(filePath)
 			if err != nil {
-				log.Blog.Warningf("init process read command error : %v", err)
+				glog.Warningf("init process read command error : %v", err)
 				return make([]string, 0), err
 			}
 
@@ -72,10 +73,10 @@ Init 挂载点
 func setUpMount() {
 	pwd, err := os.Getwd()
 	if err != nil {
-		log.Blog.Errorf("Get current location error %v", err)
+		glog.Errorf("Get current location error %v", err)
 		return
 	}
-	log.Blog.Infof("Current location is %s", pwd)
+	glog.Infof("Current location is %s", pwd)
 	pivotRoot(pwd)
 
 	//mount proc

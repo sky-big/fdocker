@@ -7,8 +7,7 @@ import (
 	"strings"
 	"time"
 
-	log "common/clog"
-
+	"github.com/golang/glog"
 	"github.com/vishvananda/netlink"
 )
 
@@ -33,7 +32,7 @@ func (d *BridgeNetworkDriver) Create(subnet string, name string) (*Network, erro
 	}
 	err := d.initBridge(n)
 	if err != nil {
-		log.Blog.Errorf("error init bridge: %v", err)
+		glog.Errorf("error init bridge: %v", err)
 	}
 
 	return n, err
@@ -182,7 +181,7 @@ func setInterfaceIP(name string, rawIP string) error {
 		if err == nil {
 			break
 		}
-		log.Blog.Debugf("error retrieving new bridge netlink link [ %s ]... retrying", name)
+		glog.Debugf("error retrieving new bridge netlink link [ %s ]... retrying", name)
 		time.Sleep(2 * time.Second)
 	}
 	if err != nil {
@@ -202,7 +201,7 @@ func setupIPTables(bridgeName string, subnet *net.IPNet) error {
 	//err := cmd.Run()
 	output, err := cmd.Output()
 	if err != nil {
-		log.Blog.Errorf("iptables Output, %v", output)
+		glog.Errorf("iptables Output, %v", output)
 	}
 	return err
 }

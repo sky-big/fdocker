@@ -3,26 +3,15 @@ package main
 import (
 	"os"
 
-	"common/clog"
-	"fdocker"
-
+	"github.com/golang/glog"
 	"github.com/urfave/cli"
 )
 
 const (
 	usage = `fdocker is a simple container runtime for function invoke.`
-
-	LogPath  = "/var/run/function"
-	LogLevel = "DEBUG"
 )
 
 func main() {
-	clog.LogInit(clog.LogConfig{
-		LogDir:   LogPath,
-		ToStderr: false,
-		Level:    LogLevel,
-	})
-
 	app := cli.NewApp()
 	app.Name = "fdocker"
 	app.Usage = usage
@@ -45,6 +34,6 @@ func main() {
 	}
 
 	if err := app.Run(os.Args); err != nil {
-		clog.Flush()
+		glog.Warningf("fdocker run error : ", err)
 	}
 }

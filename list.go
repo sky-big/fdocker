@@ -1,4 +1,4 @@
-package fdocker
+package main
 
 import (
 	"fmt"
@@ -6,11 +6,11 @@ import (
 	"os"
 	"text/tabwriter"
 
-	log "common/clog"
-	"fdocker/container/config"
-	"fdocker/container/manager"
-	"fdocker/container/types"
+	"github.com/sky-big/fdocker/container/config"
+	"github.com/sky-big/fdocker/container/manager"
+	"github.com/sky-big/fdocker/container/types"
 
+	"github.com/golang/glog"
 	"github.com/urfave/cli"
 )
 
@@ -29,7 +29,7 @@ func ListContainers() {
 	dirURL = dirURL[:len(dirURL)-1]
 	files, err := ioutil.ReadDir(dirURL)
 	if err != nil {
-		log.Blog.Errorf("Read dir %s error %v", dirURL, err)
+		glog.Errorf("Read dir %s error %v", dirURL, err)
 		return
 	}
 
@@ -40,7 +40,7 @@ func ListContainers() {
 		}
 		tmpContainer, err := manager.GetContainerInfoByName(file.Name())
 		if err != nil {
-			log.Blog.Errorf("Get container info error %v", err)
+			glog.Errorf("Get container info error %v", err)
 			continue
 		}
 		containers = append(containers, tmpContainer)
@@ -58,7 +58,7 @@ func ListContainers() {
 			item.CreatedTime)
 	}
 	if err := w.Flush(); err != nil {
-		log.Blog.Errorf("Flush error %v", err)
+		glog.Errorf("Flush error %v", err)
 		return
 	}
 }

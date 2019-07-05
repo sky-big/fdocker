@@ -1,21 +1,22 @@
 package container
 
 import (
-	log "common/clog"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"syscall"
 
-	"fdocker/container/config"
-	"fdocker/container/logs"
-	fvolume "fdocker/container/volume"
+	"github.com/sky-big/fdocker/container/config"
+	"github.com/sky-big/fdocker/container/logs"
+	fvolume "github.com/sky-big/fdocker/container/volume"
+
+	"github.com/golang/glog"
 )
 
 func NewParentProcess(tty bool, containerName, volume, imageName, user string, envSlice []string) *exec.Cmd {
 	initCmd, err := os.Readlink("/proc/self/exe")
 	if err != nil {
-		log.Blog.Errorf("get init process error %v", err)
+		glog.Errorf("get init process error %v", err)
 		return nil
 	}
 

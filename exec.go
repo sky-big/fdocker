@@ -1,4 +1,4 @@
-package fdocker
+package main
 
 import (
 	"fmt"
@@ -7,10 +7,10 @@ import (
 	"os/exec"
 	"strings"
 
-	log "common/clog"
-	"fdocker/container/manager"
-	_ "fdocker/container/nsenter"
+	"github.com/sky-big/fdocker/container/manager"
+	_ "github.com/sky-big/fdocker/container/nsenter"
 
+	"github.com/golang/glog"
 	"github.com/urfave/cli"
 )
 
@@ -24,7 +24,7 @@ var ExecCommand = cli.Command{
 	Action: func(context *cli.Context) error {
 		//This is for callback
 		if os.Getenv(ENV_EXEC_PID) != "" {
-			log.Blog.Infof("pid callback pid %s", os.Getgid())
+			glog.Infof("pid callback pid %s", os.Getgid())
 			return nil
 		}
 
@@ -44,13 +44,13 @@ var ExecCommand = cli.Command{
 func ExecContainer(containerName string, comArray []string) {
 	containerInfo, err := manager.GetContainerInfoByName(containerName)
 	if err != nil {
-		log.Blog.Errorf("Get container %s info error %v", containerName, err)
+		glog.Errorf("Get container %s info error %v", containerName, err)
 		return
 	}
 
 	cmdStr := strings.Join(comArray, " ")
-	log.Blog.Infof("container pid %s", containerInfo.Pid)
-	log.Blog.Infof("command %s", cmdStr)
+	glog.Infof("container pid %s", containerInfo.Pid)
+	glog.Infof("command %s", cmdStr)
 
 	cmd := exec.Command("/proc/self/exe", "exec")
 	cmd.Stdin = os.Stdin
@@ -63,7 +63,7 @@ func ExecContainer(containerName string, comArray []string) {
 	cmd.Env = append(os.Environ(), containerEnvs...)
 
 	if err := cmd.Run(); err != nil {
-		log.Blog.Errorf("Exec container %s error %v", containerName, err)
+		glog.Errorf("Exec container %s error %v", containerName, err)
 	}
 }
 
@@ -71,7 +71,7 @@ func getEnvsByPid(pid string) []string {
 	path := fmt.Sprintf("/proc/%s/environ", pid)
 	contentBytes, err := ioutil.ReadFile(path)
 	if err != nil {
-		log.Blog.Errorf("Read file %s error %v", path, err)
+		glog.Errorf("Read file %s error %v", path, err)
 		return nil
 	}
 	//env split by \u0000

@@ -1,4 +1,4 @@
-package fdocker
+package main
 
 import (
 	"fmt"
@@ -7,18 +7,18 @@ import (
 	"strconv"
 	"strings"
 
-	log "common/clog"
-	"fdocker/cgroups"
-	"fdocker/cgroups/subsystems"
-	"fdocker/container"
-	"fdocker/container/common"
-	"fdocker/container/config"
-	"fdocker/container/logs"
-	"fdocker/container/manager"
-	"fdocker/container/types"
-	fvolume "fdocker/container/volume"
-	"fdocker/network"
+	"github.com/sky-big/fdocker/cgroups"
+	"github.com/sky-big/fdocker/cgroups/subsystems"
+	"github.com/sky-big/fdocker/container"
+	"github.com/sky-big/fdocker/container/common"
+	"github.com/sky-big/fdocker/container/config"
+	"github.com/sky-big/fdocker/container/logs"
+	"github.com/sky-big/fdocker/container/manager"
+	"github.com/sky-big/fdocker/container/types"
+	fvolume "github.com/sky-big/fdocker/container/volume"
+	"github.com/sky-big/fdocker/network"
 
+	"github.com/golang/glog"
 	"github.com/urfave/cli"
 )
 
@@ -96,7 +96,7 @@ var RunCommand = cli.Command{
 			CpuSet:      context.String("cpuset"),
 			CpuShare:    context.String("cpushare"),
 		}
-		log.Blog.Infof("createTty %v", createTty)
+		glog.Infof("createTty %v", createTty)
 		containerName := context.String("name")
 		volume := context.String("v")
 		network := context.String("net")
@@ -117,23 +117,23 @@ func Run(tty bool, comArray []string, res *subsystems.ResourceConfig, containerN
 		containerName = containerID
 	}
 
-	log.Blog.Infof("parent %s starting", containerName)
+	glog.Infof("parent %s starting", containerName)
 
 	parent := container.NewParentProcess(tty, containerName, volume, imageName, user, envSlice)
 	if parent == nil {
-		log.Blog.Errorf("New parent process error")
+		glog.Errorf("New parent process error")
 		return
 	}
 
 	if err := parent.Start(); err != nil {
-		log.Blog.Error(err)
+		glog.Error(err)
 	}
 
 	// use containerID as cgroup name
 	cgroupManager := cgroups.NewCgroupManager(containerID)
 	cgroupManager.Set(res)
 	if err := cgroupManager.Apply(parent.Process.Pid); err != nil {
-		log.Blog.Error(err)
+		glog.Error(err)
 	}
 
 	ipStr := ""
@@ -147,7 +147,7 @@ func Run(tty bool, comArray []string, res *subsystems.ResourceConfig, containerN
 			PortMapping: portmapping,
 		}
 		if ip, err := network.Connect(nw, containerInfo); err != nil {
-			log.Blog.Errorf("Error Connect Network %v", err)
+			glog.Errorf("Error Connect Network %v", err)
 			return
 		} else {
 			ipStr = ip
@@ -157,15 +157,15 @@ func Run(tty bool, comArray []string, res *subsystems.ResourceConfig, containerN
 	// record container info
 	err := manager.SaveContainerInfo(parent.Process.Pid, comArray, containerName, containerID, volume, ipStr, nw)
 	if err != nil {
-		log.Blog.Errorf("Record container info error %v", err)
+		glog.Errorf("Record container info error %v", err)
 		return
 	}
 
-	log.Blog.Infof("parent %s store meta data success", containerName)
+	glog.Infof("parent %s store meta data success", containerName)
 
 	err = saveInitCommand(containerName, comArray)
 	if err != nil {
-		log.Blog.Warningf("parent process save init command error : %v", err)
+		glog.Warningf("parent process save init command error : %v", err)
 		return
 	}
 
@@ -180,24 +180,24 @@ func Run(tty bool, comArray []string, res *subsystems.ResourceConfig, containerN
 
 func saveInitCommand(containerName string, comArray []string) error {
 	command := strings.Join(comArray, " ")
-	log.Blog.Infof("command all is %s", command)
+	glog.Infof("command all is %s", command)
 
 	filePath := fmt.Sprintf(config.DefaultInfoLocation, containerName) + config.InitCommandFile
 	filePathBack := filePath + ".bk"
 	f, err := os.Create(filePathBack)
 	if err != nil {
-		log.Blog.Warningf("save init command create file error : %v", err)
+		glog.Warningf("save init command create file error : %v", err)
 		return err
 	}
 
 	_, err = io.WriteString(f, command)
 	if err != nil {
-		log.Blog.Warningf("save init command write error : %v", err)
+		glog.Warningf("save init command write error : %v", err)
 		return err
 	}
 
 	if err := os.Rename(filePathBack, filePath); err != nil {
-		log.Blog.Warningf("change filename(%s) to filename(%s) err: %s", filePathBack, filePath, err.Error())
+		glog.Warningf("change filename(%s) to filename(%s) err: %s", filePathBack, filePath, err.Error())
 		return err
 	}
 

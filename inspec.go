@@ -1,13 +1,13 @@
-package fdocker
+package main
 
 import (
 	"encoding/json"
 	"fmt"
 	"os"
 
-	log "common/clog"
-	"fdocker/container/manager"
+	"github.com/sky-big/fdocker/container/manager"
 
+	"github.com/golang/glog"
 	"github.com/urfave/cli"
 )
 
@@ -28,13 +28,13 @@ var InspecCommand = cli.Command{
 func InspecContainer(containerName string) {
 	containerInfo, err := manager.GetContainerInfoByName(containerName)
 	if err != nil {
-		log.Blog.Errorf("Get container %s error %v", containerName, err)
+		glog.Errorf("Get container %s error %v", containerName, err)
 		return
 	}
 
 	content, err := json.Marshal(containerInfo)
 	if err != nil {
-		log.Blog.Errorf("Marshal container info error %v", err)
+		glog.Errorf("Marshal container info error %v", err)
 	}
 	fmt.Fprint(os.Stdout, string(content))
 }

@@ -1,16 +1,16 @@
-package fdocker
+package main
 
 import (
 	"fmt"
 
-	log "common/clog"
-	"fdocker/cgroups"
-	"fdocker/container/config"
-	"fdocker/container/logs"
-	"fdocker/container/manager"
-	"fdocker/container/volume"
-	"fdocker/network"
+	"github.com/sky-big/fdocker/cgroups"
+	"github.com/sky-big/fdocker/container/config"
+	"github.com/sky-big/fdocker/container/logs"
+	"github.com/sky-big/fdocker/container/manager"
+	"github.com/sky-big/fdocker/container/volume"
+	"github.com/sky-big/fdocker/network"
 
+	"github.com/golang/glog"
 	"github.com/urfave/cli"
 )
 
@@ -31,11 +31,11 @@ var RemoveCommand = cli.Command{
 func removeContainer(containerName string) {
 	containerInfo, err := manager.GetContainerInfoByName(containerName)
 	if err != nil {
-		log.Blog.Errorf("Get container %s info error %v", containerName, err)
+		glog.Errorf("Get container %s info error %v", containerName, err)
 		return
 	}
 	if containerInfo.Status != config.STOP {
-		log.Blog.Errorf("Couldn't remove running container")
+		glog.Errorf("Couldn't remove running container")
 		return
 	}
 

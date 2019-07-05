@@ -1,8 +1,9 @@
-package fdocker
+package main
 
 import (
 	log "common/clog"
-	"fdocker/container"
+
+	"github.com/sky-big/fdocker/container"
 
 	"github.com/urfave/cli"
 )

@@ -1,8 +1,9 @@
 package cgroups
 
 import (
-	log "common/clog"
-	"fdocker/cgroups/subsystems"
+	"github.com/sky-big/fdocker/cgroups/subsystems"
+
+	"github.com/golang/glog"
 )
 
 type CgroupManager struct {
@@ -38,7 +39,7 @@ func (c *CgroupManager) Set(res *subsystems.ResourceConfig) error {
 func (c *CgroupManager) Destroy() error {
 	for _, subSysIns := range subsystems.SubsystemsIns {
 		if err := subSysIns.Remove(c.Path); err != nil {
-			log.Blog.Warningf("remove cgroup fail %v", err)
+			glog.Warningf("remove cgroup fail %v", err)
 		}
 	}
 	return nil

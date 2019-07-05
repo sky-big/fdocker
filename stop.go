@@ -1,14 +1,14 @@
-package fdocker
+package main
 
 import (
 	"fmt"
 	"strconv"
 	"syscall"
 
-	log "common/clog"
-	"fdocker/container/config"
-	"fdocker/container/manager"
+	"github.com/sky-big/fdocker/container/config"
+	"github.com/sky-big/fdocker/container/manager"
 
+	"github.com/golang/glog"
 	"github.com/urfave/cli"
 )
 
@@ -29,24 +29,23 @@ var StopCommand = cli.Command{
 func stopContainer(containerName string) {
 	containerInfo, err := manager.GetContainerInfoByName(containerName)
 	if err != nil {
-		log.Blog.Errorf("Get container %s info error %v", containerName, err)
+		glog.Errorf("Get container %s info error %v", containerName, err)
 		return
 	}
 	pidInt, err := strconv.Atoi(containerInfo.Pid)
 	if err != nil {
-		log.Blog.Errorf("Conver pid from string to int error %v", err)
+		glog.Errorf("Conver pid from string to int error %v", err)
 		return
 	}
 
 	if err := syscall.Kill(pidInt, syscall.SIGKILL); err != nil {
-		log.Blog.Errorf("Stop container %s error %v", containerName, err)
-		//		return
+		glog.Errorf("Stop container %s error %v", containerName, err)
 	}
 
 	containerInfo.Status = config.STOP
 	containerInfo.Pid = " "
 	err = manager.UpdateContainerInfo(containerInfo)
 	if err != nil {
-		log.Blog.Errorf("Update container info %v error %v", containerInfo, err)
+		glog.Errorf("Update container info %v error %v", containerInfo, err)
 	}
 }

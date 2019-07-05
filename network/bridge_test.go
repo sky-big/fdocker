@@ -1,8 +1,9 @@
 package network
 
 import (
-	"fdocker/container"
 	"testing"
+
+	"github.com/sky-big/fdocker/container/types"
 )
 
 func TestBridgeInit(t *testing.T) {
@@ -27,7 +28,7 @@ func TestBridgeConnect(t *testing.T) {
 
 func TestNetworkConnect(t *testing.T) {
 
-	cInfo := &container.ContainerInfo{
+	cInfo := &types.ContainerInfo{
 		Id:  "testcontainer",
 		Pid: "15438",
 	}

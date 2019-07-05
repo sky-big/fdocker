@@ -1,13 +1,13 @@
-package fdocker
+package main
 
 import (
 	"fmt"
 	"io/ioutil"
 	"os"
 
-	log "common/clog"
-	"fdocker/container/config"
+	"github.com/sky-big/fdocker/container/config"
 
+	"github.com/golang/glog"
 	"github.com/urfave/cli"
 )
 
@@ -50,17 +50,17 @@ func logContainer(containerName string, stdout, stderr bool) {
 	file, err := os.OpenFile(logFileLocation, os.O_RDWR, 0666)
 	defer file.Close()
 	if err != nil {
-		log.Blog.Errorf("Log container open file %s error %v", logFileLocation, err)
+		glog.Errorf("Log container open file %s error %v", logFileLocation, err)
 		return
 	}
 	content, err := ioutil.ReadAll(file)
 	if err != nil {
-		log.Blog.Errorf("Log container read file %s error %v", logFileLocation, err)
+		glog.Errorf("Log container read file %s error %v", logFileLocation, err)
 		return
 	}
 	fmt.Fprint(os.Stdout, string(content))
 
-	//clean file
+	// clean file
 	file1, _ := os.OpenFile(logFileLocation, os.O_RDWR|os.O_TRUNC, 0666)
 	defer file1.Close()
 }

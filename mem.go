@@ -1,14 +1,14 @@
-package fdocker
+package main
 
 import (
-	log "common/clog"
 	"encoding/json"
 	"fmt"
 	"os"
 
-	"fdocker/container/manager"
+	"github.com/sky-big/fdocker/cgroups"
+	"github.com/sky-big/fdocker/container/manager"
 
-	"github.com/containerd/cgroups"
+	"github.com/golang/glog"
 	"github.com/urfave/cli"
 )
 
@@ -28,27 +28,26 @@ var GetMemCommand = cli.Command{
 func GetMemInfo(containerName string) {
 	containerInfo, err := manager.GetContainerInfoByName(containerName)
 	if err != nil {
-		log.Blog.Errorf("Get container %s info error %v", containerName, err)
+		glog.Errorf("Get container %s info error %v", containerName, err)
 		return
 	}
 
 	path := "/" + containerInfo.Id
 	control, err := cgroups.Load(cgroups.V1, cgroups.StaticPath(path))
 	if err != nil {
-		log.Blog.Errorf("GetMemInfo error:%v", err)
+		glog.Errorf("GetMemInfo error:%v", err)
 		return
 	}
 
 	metrics, err := control.Stat()
 	if err != nil {
-		log.Blog.Errorf("GetMemInfo error:%v", err)
+		glog.Errorf("GetMemInfo error:%v", err)
 		return
 	}
 
 	memInfo, err := json.Marshal(metrics.Memory.Usage)
 	if err != nil {
-		log.Blog.Errorf("GetMemInfo error:%v", err)
-
+		glog.Errorf("GetMemInfo error:%v", err)
 		return
 	}
 

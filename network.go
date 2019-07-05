@@ -1,9 +1,9 @@
-package fdocker
+package main
 
 import (
 	"fmt"
 
-	"fdocker/network"
+	"github.com/sky-big/fdocker/network"
 
 	"github.com/urfave/cli"
 )

@@ -12,9 +12,9 @@ import (
 	"strings"
 	"text/tabwriter"
 
-	log "common/clog"
-	"fdocker/container/types"
+	"github.com/sky-big/fdocker/container/types"
 
+	"github.com/golang/glog"
 	"github.com/vishvananda/netlink"
 	"github.com/vishvananda/netns"
 )
@@ -60,20 +60,20 @@ func (nw *Network) dump(dumpPath string) error {
 	nwPath := path.Join(dumpPath, nw.Name)
 	nwFile, err := os.OpenFile(nwPath, os.O_TRUNC|os.O_WRONLY|os.O_CREATE, 0644)
 	if err != nil {
-		log.Blog.Errorf("error：", err)
+		glog.Errorf("error：", err)
 		return err
 	}
 	defer nwFile.Close()
 
 	nwJson, err := json.Marshal(nw)
 	if err != nil {
-		log.Blog.Errorf("error：", err)
+		glog.Errorf("error：", err)
 		return err
 	}
 
 	_, err = nwFile.Write(nwJson)
 	if err != nil {
-		log.Blog.Errorf("error：", err)
+		glog.Errorf("error：", err)
 		return err
 	}
 	return nil
@@ -105,7 +105,7 @@ func (nw *Network) load(dumpPath string) error {
 
 	err = json.Unmarshal(nwJson[:n], nw)
 	if err != nil {
-		log.Blog.Errorf("Error load nw info", err)
+		glog.Errorf("Error load nw info", err)
 		return err
 	}
 	return nil
@@ -133,7 +133,7 @@ func Init() error {
 		}
 
 		if err := nw.load(nwPath); err != nil {
-			log.Blog.Errorf("error load network: %s", err)
+			glog.Errorf("error load network: %s", err)
 		}
 
 		networks[nwName] = nw
@@ -170,7 +170,7 @@ func ListNetwork() {
 		)
 	}
 	if err := w.Flush(); err != nil {
-		log.Blog.Errorf("Flush error %v", err)
+		glog.Errorf("Flush error %v", err)
 		return
 	}
 }
@@ -195,7 +195,7 @@ func DeleteNetwork(networkName string) error {
 func enterContainerNetns(enLink *netlink.Link, cinfo *types.ContainerInfo) func() {
 	f, err := os.OpenFile(fmt.Sprintf("/proc/%s/ns/net", cinfo.Pid), os.O_RDONLY, 0)
 	if err != nil {
-		log.Blog.Errorf("error get container net namespace, %v", err)
+		glog.Errorf("error get container net namespace, %v", err)
 	}
 
 	nsFD := f.Fd()
@@ -203,18 +203,18 @@ func enterContainerNetns(enLink *netlink.Link, cinfo *types.ContainerInfo) func(
 
 	// 修改veth peer 另外一端移到容器的namespace中
 	if err = netlink.LinkSetNsFd(*enLink, int(nsFD)); err != nil {
-		log.Blog.Errorf("error set link netns , %v", err)
+		glog.Errorf("error set link netns , %v", err)
 	}
 
 	// 获取当前的网络namespace
 	origns, err := netns.Get()
 	if err != nil {
-		log.Blog.Errorf("error get current netns, %v", err)
+		glog.Errorf("error get current netns, %v", err)
 	}
 
 	// 设置当前进程到新的网络namespace，并在函数执行完成之后再恢复到之前的namespace
 	if err = netns.Set(netns.NsHandle(nsFD)); err != nil {
-		log.Blog.Errorf("error set netns, %v", err)
+		glog.Errorf("error set netns, %v", err)
 	}
 	return func() {
 		netns.Set(origns)
@@ -267,7 +267,7 @@ func configPortMapping(ep *Endpoint, cinfo *types.ContainerInfo) error {
 	for _, pm := range ep.PortMapping {
 		portMapping := strings.Split(pm, ":")
 		if len(portMapping) != 2 {
-			log.Blog.Errorf("port mapping format error, %v", pm)
+			glog.Errorf("port mapping format error, %v", pm)
 			continue
 		}
 		iptablesCmd := fmt.Sprintf("-t nat -A PREROUTING -p tcp -m tcp --dport %s -j DNAT --to-destination %s:%s",
@@ -276,7 +276,7 @@ func configPortMapping(ep *Endpoint, cinfo *types.ContainerInfo) error {
 		//err := cmd.Run()
 		output, err := cmd.Output()
 		if err != nil {
-			log.Blog.Errorf("iptables Output, %v", output)
+			glog.Errorf("iptables Output, %v", output)
 			continue
 		}
 	}
