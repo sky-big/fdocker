@@ -181,7 +181,7 @@ func setInterfaceIP(name string, rawIP string) error {
 		if err == nil {
 			break
 		}
-		glog.Debugf("error retrieving new bridge netlink link [ %s ]... retrying", name)
+		glog.Infof("error retrieving new bridge netlink link [ %s ]... retrying", name)
 		time.Sleep(2 * time.Second)
 	}
 	if err != nil {

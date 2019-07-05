@@ -17,16 +17,16 @@ func main() {
 	app.Usage = usage
 
 	app.Commands = []cli.Command{
-		fdocker.InitCommand,
-		fdocker.RunCommand,
-		fdocker.ListCommand,
-		fdocker.LogCommand,
-		fdocker.ExecCommand,
-		fdocker.StopCommand,
-		fdocker.RemoveCommand,
-		fdocker.NetworkCommand,
-		fdocker.InspecCommand,
-		fdocker.GetMemCommand,
+		InitCommand,
+		RunCommand,
+		ListCommand,
+		LogCommand,
+		ExecCommand,
+		StopCommand,
+		RemoveCommand,
+		NetworkCommand,
+		InspecCommand,
+		GetMemCommand,
 	}
 
 	app.Before = func(context *cli.Context) error {
