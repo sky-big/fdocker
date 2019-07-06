@@ -12,8 +12,8 @@ import (
 	"strings"
 	"text/tabwriter"
 
-	"github.com/sky-big/fdocker/container/config"
 	"github.com/sky-big/fdocker/container/types"
+	"github.com/sky-big/fdocker/network/config"
 
 	"github.com/golang/glog"
 	"github.com/vishvananda/netlink"

@@ -7,8 +7,8 @@ import (
 	"path"
 	"strings"
 
-	"github.com/sky-big/fdocker/container/config"
 	"github.com/sky-big/fdocker/container/lock"
+	"github.com/sky-big/fdocker/network/config"
 
 	"github.com/golang/glog"
 )
