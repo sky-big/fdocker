@@ -13,11 +13,11 @@ import (
 	"github.com/golang/glog"
 )
 
-//Create a AUFS filesystem as container root workspace
+// Create a AUFS filesystem as container root workspace
 func NewWorkSpace(volume string) {
 	CreateReadOnlyLayer()
-	//	CreateWriteLayer(containerName)
-	//	CreateMountPoint(containerName, imageName)
+	// CreateWriteLayer(containerName)
+	// CreateMountPoint(containerName, imageName)
 	if volume != "" {
 		volumeURLs := strings.Split(volume, ":")
 		length := len(volumeURLs)
@@ -30,7 +30,7 @@ func NewWorkSpace(volume string) {
 	}
 }
 
-//Decompression tar image
+// Decompression tar image
 func CreateReadOnlyLayer() error {
 	unTarFolderUrl := filepath.Join(config.RootUrl, config.Runtime)
 	exist, err := common.PathExists(unTarFolderUrl)

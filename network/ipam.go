@@ -7,12 +7,11 @@ import (
 	"path"
 	"strings"
 
+	"github.com/sky-big/fdocker/container/config"
 	"github.com/sky-big/fdocker/container/lock"
 
 	"github.com/golang/glog"
 )
-
-const ipamDefaultAllocatorPath = "/var/run/fdocker/network/ipam/subnet.json"
 
 type IPAM struct {
 	SubnetAllocatorPath string
@@ -20,7 +19,7 @@ type IPAM struct {
 }
 
 var ipAllocator = &IPAM{
-	SubnetAllocatorPath: ipamDefaultAllocatorPath,
+	SubnetAllocatorPath: config.IpamDefaultAllocatorLocation,
 }
 
 func (ipam *IPAM) Init() error {

@@ -163,6 +163,7 @@ func Run(tty bool, comArray []string, res *subsystems.ResourceConfig, containerN
 
 	glog.Infof("parent %s store meta data success", containerName)
 
+	// record init process run command
 	err = saveInitCommand(containerName, comArray)
 	if err != nil {
 		glog.Warningf("parent process save init command error : %v", err)

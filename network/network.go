@@ -12,6 +12,7 @@ import (
 	"strings"
 	"text/tabwriter"
 
+	"github.com/sky-big/fdocker/container/config"
 	"github.com/sky-big/fdocker/container/types"
 
 	"github.com/golang/glog"
@@ -20,9 +21,8 @@ import (
 )
 
 var (
-	defaultNetworkPath = "/var/run/fdocker/network/network/"
-	drivers            = map[string]NetworkDriver{}
-	networks           = map[string]*Network{}
+	drivers  = map[string]NetworkDriver{}
+	networks = map[string]*Network{}
 )
 
 type Endpoint struct {
@@ -115,15 +115,15 @@ func Init() error {
 	var bridgeDriver = BridgeNetworkDriver{}
 	drivers[bridgeDriver.Name()] = &bridgeDriver
 
-	if _, err := os.Stat(defaultNetworkPath); err != nil {
+	if _, err := os.Stat(config.DefaultNetworkLocation); err != nil {
 		if os.IsNotExist(err) {
-			os.MkdirAll(defaultNetworkPath, 0644)
+			os.MkdirAll(config.DefaultNetworkLocation, 0644)
 		} else {
 			return err
 		}
 	}
 
-	filepath.Walk(defaultNetworkPath, func(nwPath string, info os.FileInfo, err error) error {
+	filepath.Walk(config.DefaultNetworkLocation, func(nwPath string, info os.FileInfo, err error) error {
 		if strings.HasSuffix(nwPath, "/") {
 			return nil
 		}
@@ -156,7 +156,7 @@ func CreateNetwork(driver, subnet, name string) error {
 		return err
 	}
 
-	return nw.dump(defaultNetworkPath)
+	return nw.dump(config.DefaultNetworkLocation)
 }
 
 func ListNetwork() {
@@ -189,7 +189,7 @@ func DeleteNetwork(networkName string) error {
 		return fmt.Errorf("Error Remove Network DriverError: %s", err)
 	}
 
-	return nw.remove(defaultNetworkPath)
+	return nw.remove(config.DefaultNetworkLocation)
 }
 
 func enterContainerNetns(enLink *netlink.Link, cinfo *types.ContainerInfo) func() {
