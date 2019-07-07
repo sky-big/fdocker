@@ -71,6 +71,10 @@ var RunCommand = cli.Command{
 			Name:  "u",
 			Usage: "user command owner",
 		},
+		cli.StringFlag{
+			Name:  "images",
+			Usage: "image store path",
+		},
 	},
 	Action: func(context *cli.Context) error {
 		if len(context.Args()) < 1 {
@@ -104,6 +108,12 @@ var RunCommand = cli.Command{
 
 		envSlice := context.StringSlice("e")
 		portmapping := context.StringSlice("p")
+
+		// image store path
+		imageStorePath := context.String("images")
+		if imageStorePath != "" {
+			config.ImageStorePath = imageStorePath
+		}
 
 		Run(createTty, cmdArray, resConf, containerName, volume, imageName, envSlice, network, user, portmapping)
 		return nil
@@ -173,7 +183,7 @@ func Run(tty bool, comArray []string, res *subsystems.ResourceConfig, containerN
 	if tty {
 		parent.Wait()
 		manager.DeleteContainerInfo(containerName)
-		fvolume.DeleteWorkSpace(volume)
+		fvolume.DeleteWorkSpace(volume, containerName)
 		cgroupManager.Destroy()
 		logs.DeleteLogFile(containerName)
 	}

@@ -2,6 +2,8 @@
 
 fdocker is a simplified version docker by self
 
-# Compile
+# QuickStart
 
-go build .
+1. make init
+
+2. make run

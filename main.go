@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"os"
 
 	"github.com/golang/glog"
@@ -12,6 +13,8 @@ const (
 )
 
 func main() {
+	flag.Parse()
+
 	app := cli.NewApp()
 	app.Name = "fdocker"
 	app.Usage = usage

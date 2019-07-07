@@ -11,8 +11,11 @@ const (
 	ContainerErrFile             string = "stderr.log"
 	DefaultNetworkLocation       string = "/var/run/fdocker/network/network/"
 	IpamDefaultAllocatorLocation string = "/var/run/fdocker/network/ipam/subnet.json"
-	RootUrl                      string = "/var"
-	Runtime                      string = "runtime"
-	MntUrl                       string = "/root/mnt/%s"
-	WriteLayerUrl                string = "/root/writeLayer/%s"
+	Root                         string = "/var/run/fdocker/root/"
+	MntPath                      string = Root + "mnt/"
+	WritePath                    string = Root + "writelayer/"
+)
+
+var (
+	ImageStorePath string = Root
 )

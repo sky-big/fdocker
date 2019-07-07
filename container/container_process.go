@@ -3,7 +3,6 @@ package container
 import (
 	"os"
 	"os/exec"
-	"path/filepath"
 	"syscall"
 
 	"github.com/sky-big/fdocker/container/config"
@@ -44,7 +43,7 @@ func NewParentProcess(tty bool, containerName, volume, imageName, user string, e
 	}
 
 	cmd.Env = append(os.Environ(), envSlice...)
-	fvolume.NewWorkSpace(volume)
-	cmd.Dir = filepath.Join(config.RootUrl, config.Runtime)
+	fvolume.NewWorkSpace(volume, imageName, containerName)
+	cmd.Dir = config.MntPath + containerName
 	return cmd
 }

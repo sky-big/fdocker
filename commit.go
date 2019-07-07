@@ -26,10 +26,10 @@ var CommitCommand = cli.Command{
 }
 
 func commitContainer(containerName, imageName string) {
-	mntURL := fmt.Sprintf(config.MntUrl, containerName)
+	mntURL := config.MntPath + containerName
 	mntURL += "/"
 
-	imageTar := config.RootUrl + "/" + imageName + ".tar"
+	imageTar := config.Root + imageName + ".tar"
 
 	if _, err := exec.Command("tar", "-czf", imageTar, "-C", mntURL, ".").CombinedOutput(); err != nil {
 		glog.Errorf("Tar folder %s error %v", mntURL, err)

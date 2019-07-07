@@ -33,9 +33,12 @@ func RunContainerInitProcess(containerName, user string) error {
 	// pivot root file system
 	setUpMount()
 
-	if err := userOp.SetUser(user); err != nil {
-		glog.Errorf("Set User error %v", err)
-		return err
+	// set user
+	if user != "" {
+		if err := userOp.SetUser(user); err != nil {
+			glog.Errorf("Set User error %v", err)
+			return err
+		}
 	}
 
 	path, err := exec.LookPath(cmdArray[0])
@@ -80,8 +83,8 @@ func setUpMount() {
 	pivotRoot(pwd)
 
 	//mount proc
-	defaultMountFlags := syscall.MS_NOEXEC | syscall.MS_NOSUID | syscall.MS_NODEV
-	syscall.Mount("proc", "/proc", "proc", uintptr(defaultMountFlags), "")
+	//defaultMountFlags := syscall.MS_NOEXEC | syscall.MS_NOSUID | syscall.MS_NODEV
+	//syscall.Mount("proc", "/proc", "proc", uintptr(defaultMountFlags), "")
 
 	//syscall.Mount("tmpfs", "/dev", "tmpfs", syscall.MS_NOSUID|syscall.MS_STRICTATIME, "mode=755")
 }

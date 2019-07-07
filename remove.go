@@ -39,7 +39,7 @@ func removeContainer(containerName string) {
 		return
 	}
 
-	volume.DeleteWorkSpace(containerInfo.Volume)
+	volume.DeleteWorkSpace(containerInfo.Volume, containerName)
 	cgroupManager := cgroups.NewCgroupManager(containerInfo.Id)
 	cgroupManager.Destroy()
 	logs.DeleteLogFile(containerName)
