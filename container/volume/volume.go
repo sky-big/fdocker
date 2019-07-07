@@ -8,7 +8,8 @@ import (
 	"github.com/sky-big/fdocker/container/common"
 	"github.com/sky-big/fdocker/container/config"
 
-	"github.com/golang/glog"
+	// "github.com/golang/glog"
+	glog "github.com/Sirupsen/logrus"
 )
 
 // Create a AUFS filesystem as container root workspace
@@ -86,9 +87,10 @@ func CreateMountPoint(containerName, imageName string) error {
 	}
 	tmpWriteLayer := config.WritePath + containerName
 	tmpImageLocation := config.Root + imageName
+	mntURL := config.MntPath + containerName
 	dirs := "dirs=" + tmpWriteLayer + ":" + tmpImageLocation
-	glog.Infof("--------:%v, %v", dirs, mntUrl)
-	_, err := exec.Command("mount", "-t", "aufs", "-o", dirs, "none", mntUrl).CombinedOutput()
+	glog.Infof("-------------:%v, %v", dirs, mntURL)
+	_, err := exec.Command("mount", "-t", "aufs", "-o", dirs, "none", mntURL).CombinedOutput()
 	if err != nil {
 		glog.Errorf("Run command for creating mount point failed %v", err)
 		return err

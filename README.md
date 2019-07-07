@@ -7,3 +7,5 @@ fdocker is a simplified version docker by self
 1. make init
 
 2. make run
+
+# Usage
