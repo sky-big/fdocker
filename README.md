@@ -1,6 +1,6 @@
 # Introduction
 
-fdocker is a simplified version docker by self
+fdocker is a container runc implementation in go
 
 # QuickStart
 
