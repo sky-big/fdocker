@@ -3,7 +3,7 @@ package cgroups
 import (
 	"github.com/sky-big/fdocker/cgroups/subsystems"
 
-	"github.com/golang/glog"
+	log "github.com/Sirupsen/logrus"
 )
 
 type CgroupManager struct {
@@ -35,11 +35,11 @@ func (c *CgroupManager) Set(res *subsystems.ResourceConfig) error {
 	return nil
 }
 
-//释放cgroup
+// 释放cgroup
 func (c *CgroupManager) Destroy() error {
 	for _, subSysIns := range subsystems.SubsystemsIns {
 		if err := subSysIns.Remove(c.Path); err != nil {
-			glog.Warningf("remove cgroup fail %v", err)
+			log.Warningf("remove cgroup fail %v", err)
 		}
 	}
 	return nil

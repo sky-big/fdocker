@@ -6,7 +6,7 @@ import (
 
 	"github.com/sky-big/fdocker/container/config"
 
-	"github.com/golang/glog"
+	log "github.com/Sirupsen/logrus"
 	"github.com/urfave/cli"
 )
 
@@ -32,6 +32,6 @@ func commitContainer(containerName, imageName string) {
 	imageTar := config.Root + imageName + ".tar"
 
 	if _, err := exec.Command("tar", "-czf", imageTar, "-C", mntURL, ".").CombinedOutput(); err != nil {
-		glog.Errorf("Tar folder %s error %v", mntURL, err)
+		log.Errorf("Tar folder %s error %v", mntURL, err)
 	}
 }

@@ -5,7 +5,7 @@ import (
 	"os"
 	"syscall"
 
-	"github.com/golang/glog"
+	log "github.com/Sirupsen/logrus"
 )
 
 type Locker interface {
@@ -21,7 +21,7 @@ type fileLocker struct {
 func NewFileLocker(path string) (Locker, error) {
 	f, err := os.Open(path)
 	if err != nil {
-		glog.Warningf("new file locker open file error : %v", err)
+		log.Warningf("new file locker open file error : %v", err)
 		return nil, err
 	}
 

@@ -9,13 +9,13 @@ import (
 	"github.com/sky-big/fdocker/container/logs"
 	fvolume "github.com/sky-big/fdocker/container/volume"
 
-	"github.com/golang/glog"
+	log "github.com/Sirupsen/logrus"
 )
 
 func NewParentProcess(tty bool, containerName, volume, imageName, user string, envSlice []string) *exec.Cmd {
 	initCmd, err := os.Readlink("/proc/self/exe")
 	if err != nil {
-		glog.Errorf("get init process error %v", err)
+		log.Errorf("get init process error %v", err)
 		return nil
 	}
 

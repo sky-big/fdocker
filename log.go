@@ -7,7 +7,7 @@ import (
 
 	"github.com/sky-big/fdocker/container/config"
 
-	"github.com/golang/glog"
+	log "github.com/Sirupsen/logrus"
 	"github.com/urfave/cli"
 )
 
@@ -50,12 +50,12 @@ func logContainer(containerName string, stdout, stderr bool) {
 	file, err := os.OpenFile(logFileLocation, os.O_RDWR, 0666)
 	defer file.Close()
 	if err != nil {
-		glog.Errorf("Log container open file %s error %v", logFileLocation, err)
+		log.Errorf("Log container open file %s error %v", logFileLocation, err)
 		return
 	}
 	content, err := ioutil.ReadAll(file)
 	if err != nil {
-		glog.Errorf("Log container read file %s error %v", logFileLocation, err)
+		log.Errorf("Log container read file %s error %v", logFileLocation, err)
 		return
 	}
 	fmt.Fprint(os.Stdout, string(content))

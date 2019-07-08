@@ -10,7 +10,7 @@ import (
 	"github.com/sky-big/fdocker/container/volume"
 	"github.com/sky-big/fdocker/network"
 
-	"github.com/golang/glog"
+	log "github.com/Sirupsen/logrus"
 	"github.com/urfave/cli"
 )
 
@@ -31,11 +31,11 @@ var RemoveCommand = cli.Command{
 func removeContainer(containerName string) {
 	containerInfo, err := manager.GetContainerInfoByName(containerName)
 	if err != nil {
-		glog.Errorf("Get container %s info error %v", containerName, err)
+		log.Errorf("Get container %s info error %v", containerName, err)
 		return
 	}
 	if containerInfo.Status != config.STOP {
-		glog.Errorf("Couldn't remove running container")
+		log.Errorf("Couldn't remove running container")
 		return
 	}
 

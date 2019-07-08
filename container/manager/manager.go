@@ -12,7 +12,7 @@ import (
 	"github.com/sky-big/fdocker/container/config"
 	"github.com/sky-big/fdocker/container/types"
 
-	"github.com/golang/glog"
+	log "github.com/Sirupsen/logrus"
 )
 
 func SaveContainerInfo(containerPID int, commandArray []string, containerName, id, volume, ip, nwName string) error {
@@ -32,25 +32,25 @@ func SaveContainerInfo(containerPID int, commandArray []string, containerName, i
 
 	jsonBytes, err := json.Marshal(containerInfo)
 	if err != nil {
-		glog.Errorf("Record container info error %v", err)
+		log.Errorf("Record container info error %v", err)
 		return err
 	}
 	jsonStr := string(jsonBytes)
 
 	dirUrl := fmt.Sprintf(config.DefaultInfoLocation, containerName)
 	if err := os.MkdirAll(dirUrl, 0622); err != nil {
-		glog.Errorf("Mkdir error %s error %v", dirUrl, err)
+		log.Errorf("Mkdir error %s error %v", dirUrl, err)
 		return err
 	}
 	fileName := dirUrl + "/" + config.ConfigName
 	file, err := os.Create(fileName)
 	defer file.Close()
 	if err != nil {
-		glog.Errorf("Create file %s error %v", fileName, err)
+		log.Errorf("Create file %s error %v", fileName, err)
 		return err
 	}
 	if _, err := file.WriteString(jsonStr); err != nil {
-		glog.Errorf("File write string error %v", err)
+		log.Errorf("File write string error %v", err)
 		return err
 	}
 
@@ -60,13 +60,13 @@ func SaveContainerInfo(containerPID int, commandArray []string, containerName, i
 func UpdateContainerInfo(containerInfo *types.ContainerInfo) error {
 	newContentBytes, err := json.Marshal(containerInfo)
 	if err != nil {
-		glog.Errorf("Json marshal %s error %v", containerInfo.Name, err)
+		log.Errorf("Json marshal %s error %v", containerInfo.Name, err)
 		return err
 	}
 	dirURL := fmt.Sprintf(config.DefaultInfoLocation, containerInfo.Name)
 	configFilePath := dirURL + config.ConfigName
 	if err := ioutil.WriteFile(configFilePath, newContentBytes, 0622); err != nil {
-		glog.Errorf("Write file %s error", configFilePath, err)
+		log.Errorf("Write file %s error", configFilePath, err)
 		return err
 	}
 	return nil
@@ -75,7 +75,7 @@ func UpdateContainerInfo(containerInfo *types.ContainerInfo) error {
 func DeleteContainerInfo(containerName string) {
 	dirURL := fmt.Sprintf(config.DefaultInfoLocation, containerName)
 	if err := os.RemoveAll(dirURL); err != nil {
-		glog.Errorf("Remove dir %s error %v", dirURL, err)
+		log.Errorf("Remove dir %s error %v", dirURL, err)
 	}
 }
 
@@ -84,12 +84,12 @@ func GetContainerInfoByName(containerName string) (*types.ContainerInfo, error) 
 	configFilePath := dirURL + config.ConfigName
 	contentBytes, err := ioutil.ReadFile(configFilePath)
 	if err != nil {
-		glog.Errorf("Read file %s error %v", configFilePath, err)
+		log.Errorf("Read file %s error %v", configFilePath, err)
 		return nil, err
 	}
 	var containerInfo types.ContainerInfo
 	if err := json.Unmarshal(contentBytes, &containerInfo); err != nil {
-		glog.Errorf("GetContainerInfoByName unmarshal error %v", err)
+		log.Errorf("GetContainerInfoByName unmarshal error %v", err)
 		return nil, err
 	}
 	return &containerInfo, nil

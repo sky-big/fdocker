@@ -14,7 +14,7 @@ import (
 	"github.com/sky-big/fdocker/container/config"
 	userOp "github.com/sky-big/fdocker/container/user"
 
-	"github.com/golang/glog"
+	log "github.com/Sirupsen/logrus"
 )
 
 const (
@@ -22,13 +22,13 @@ const (
 )
 
 func RunContainerInitProcess(containerName, user string) error {
-	glog.Infof("containername : %s, user : %s", containerName, user)
+	log.Infof("containername : %s, user : %s", containerName, user)
 	cmdArray, err := readUserCommand(containerName)
 	if cmdArray == nil || len(cmdArray) == 0 {
 		return fmt.Errorf("Run container get user command error %v, cmdArray is %v", err, cmdArray)
 	}
 
-	glog.Infof("Run container cmd : %v", cmdArray)
+	log.Infof("Run container cmd : %v", cmdArray)
 
 	// pivot root file system
 	setUpMount()
@@ -36,19 +36,19 @@ func RunContainerInitProcess(containerName, user string) error {
 	// set user
 	if user != "" {
 		if err := userOp.SetUser(user); err != nil {
-			glog.Errorf("Set User error %v", err)
+			log.Errorf("Set User error %v", err)
 			return err
 		}
 	}
 
 	path, err := exec.LookPath(cmdArray[0])
 	if err != nil {
-		glog.Errorf("Exec loop path error %v", err)
+		log.Errorf("Exec loop path error %v", err)
 		return err
 	}
-	glog.Infof("Find path %s", path)
+	log.Infof("Find path %s", path)
 	if err := syscall.Exec(path, cmdArray[0:], os.Environ()); err != nil {
-		glog.Errorf(err.Error())
+		log.Errorf(err.Error())
 	}
 	return nil
 }
@@ -60,7 +60,7 @@ func readUserCommand(containerName string) ([]string, error) {
 		if common.CheckFileIsExist(filePath) {
 			b, err := ioutil.ReadFile(filePath)
 			if err != nil {
-				glog.Warningf("init process read command error : %v", err)
+				log.Warningf("init process read command error : %v", err)
 				return make([]string, 0), err
 			}
 
@@ -76,10 +76,10 @@ Init 挂载点
 func setUpMount() {
 	pwd, err := os.Getwd()
 	if err != nil {
-		glog.Errorf("Get current location error %v", err)
+		log.Errorf("Get current location error %v", err)
 		return
 	}
-	glog.Infof("Current location is %s", pwd)
+	log.Infof("Current location is %s", pwd)
 	pivotRoot(pwd)
 
 	//mount proc

@@ -7,8 +7,8 @@ import (
 
 	"github.com/sky-big/fdocker/container/manager"
 
+	log "github.com/Sirupsen/logrus"
 	"github.com/containerd/cgroups"
-	"github.com/golang/glog"
 	"github.com/urfave/cli"
 )
 
@@ -28,26 +28,26 @@ var GetMemCommand = cli.Command{
 func GetMemInfo(containerName string) {
 	containerInfo, err := manager.GetContainerInfoByName(containerName)
 	if err != nil {
-		glog.Errorf("Get container %s info error %v", containerName, err)
+		log.Errorf("Get container %s info error %v", containerName, err)
 		return
 	}
 
 	path := "/" + containerInfo.Id
 	control, err := cgroups.Load(cgroups.V1, cgroups.StaticPath(path))
 	if err != nil {
-		glog.Errorf("GetMemInfo error:%v", err)
+		log.Errorf("GetMemInfo error:%v", err)
 		return
 	}
 
 	metrics, err := control.Stat()
 	if err != nil {
-		glog.Errorf("GetMemInfo error:%v", err)
+		log.Errorf("GetMemInfo error:%v", err)
 		return
 	}
 
 	memInfo, err := json.Marshal(metrics.Memory.Usage)
 	if err != nil {
-		glog.Errorf("GetMemInfo error:%v", err)
+		log.Errorf("GetMemInfo error:%v", err)
 		return
 	}
 

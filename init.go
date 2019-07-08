@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/sky-big/fdocker/container"
 
-	"github.com/golang/glog"
+	log "github.com/Sirupsen/logrus"
 	"github.com/urfave/cli"
 )
 
@@ -22,7 +22,7 @@ var InitCommand = cli.Command{
 		},
 	},
 	Action: func(context *cli.Context) error {
-		glog.Infof("init come on")
+		log.Infof("init come on")
 		containerName := context.String("c")
 		user := context.String("u")
 		err := Init(containerName, user)

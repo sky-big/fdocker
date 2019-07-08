@@ -10,7 +10,7 @@ import (
 	"github.com/sky-big/fdocker/container/lock"
 	"github.com/sky-big/fdocker/network/config"
 
-	"github.com/golang/glog"
+	log "github.com/Sirupsen/logrus"
 )
 
 type IPAM struct {
@@ -44,19 +44,19 @@ func (ipam *IPAM) load() error {
 	subnetConfigFile, err := os.Open(ipam.SubnetAllocatorPath)
 	defer subnetConfigFile.Close()
 	if err != nil {
-		glog.Warningf("ipam load open file error : %v", err)
+		log.Warningf("ipam load open file error : %v", err)
 		return err
 	}
 	subnetJson := make([]byte, 100000)
 	n, err := subnetConfigFile.Read(subnetJson)
 	if err != nil {
-		glog.Warningf("ipam load read file error : %v", err)
+		log.Warningf("ipam load read file error : %v", err)
 		return err
 	}
 
 	err = json.Unmarshal(subnetJson[:n], ipam.Subnets)
 	if err != nil {
-		glog.Errorf("Error dump allocation info, %v", err)
+		log.Errorf("Error dump allocation info, %v", err)
 		return err
 	}
 	return nil
@@ -74,7 +74,7 @@ func (ipam *IPAM) dump() error {
 	subnetConfigFile, err := os.OpenFile(ipam.SubnetAllocatorPath, os.O_TRUNC|os.O_WRONLY|os.O_CREATE, 0644)
 	defer subnetConfigFile.Close()
 	if err != nil {
-		glog.Warningf("ipam dump open file error : %v", err)
+		log.Warningf("ipam dump open file error : %v", err)
 		return err
 	}
 
@@ -85,7 +85,7 @@ func (ipam *IPAM) dump() error {
 
 	_, err = subnetConfigFile.Write(ipamConfigJson)
 	if err != nil {
-		glog.Warningf("ipam dump write file error : %v", err)
+		log.Warningf("ipam dump write file error : %v", err)
 		return err
 	}
 
@@ -95,10 +95,10 @@ func (ipam *IPAM) dump() error {
 func (ipam *IPAM) Allocate(subnet *net.IPNet) (ip net.IP, err error) {
 	l, err := lock.NewFileLocker(ipam.SubnetAllocatorPath)
 	if err != nil {
-		glog.Warningf("ipam allocate ip new file lock error : %v", err)
+		log.Warningf("ipam allocate ip new file lock error : %v", err)
 		return []byte(""), err
 	}
-	glog.Infof("ipam lock allocate file")
+	log.Infof("ipam lock allocate file")
 	l.Lock()
 	defer l.UnLock()
 
@@ -108,7 +108,7 @@ func (ipam *IPAM) Allocate(subnet *net.IPNet) (ip net.IP, err error) {
 	// 从文件中加载已经分配的网段信息
 	err = ipam.load()
 	if err != nil {
-		glog.Errorf("Error dump allocation info, %v", err)
+		log.Errorf("Error dump allocation info, %v", err)
 	}
 
 	_, subnet, _ = net.ParseCIDR(subnet.String())
@@ -140,7 +140,7 @@ func (ipam *IPAM) Allocate(subnet *net.IPNet) (ip net.IP, err error) {
 func (ipam *IPAM) Release(subnet *net.IPNet, ipaddr *net.IP) error {
 	l, err := lock.NewFileLocker(ipam.SubnetAllocatorPath)
 	if err != nil {
-		glog.Warningf("ipam release ip new file lock error : %v", err)
+		log.Warningf("ipam release ip new file lock error : %v", err)
 		return err
 	}
 	l.Lock()
@@ -152,7 +152,7 @@ func (ipam *IPAM) Release(subnet *net.IPNet, ipaddr *net.IP) error {
 
 	err = ipam.load()
 	if err != nil {
-		glog.Errorf("Error dump allocation info, %v", err)
+		log.Errorf("Error dump allocation info, %v", err)
 	}
 
 	c := 0

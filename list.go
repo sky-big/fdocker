@@ -10,7 +10,7 @@ import (
 	"github.com/sky-big/fdocker/container/manager"
 	"github.com/sky-big/fdocker/container/types"
 
-	"github.com/golang/glog"
+	log "github.com/Sirupsen/logrus"
 	"github.com/urfave/cli"
 )
 
@@ -29,7 +29,7 @@ func ListContainers() {
 	dirURL = dirURL[:len(dirURL)-1]
 	files, err := ioutil.ReadDir(dirURL)
 	if err != nil {
-		glog.Errorf("Read dir %s error %v", dirURL, err)
+		log.Errorf("Read dir %s error %v", dirURL, err)
 		return
 	}
 
@@ -40,7 +40,7 @@ func ListContainers() {
 		}
 		tmpContainer, err := manager.GetContainerInfoByName(file.Name())
 		if err != nil {
-			glog.Errorf("Get container info error %v", err)
+			log.Errorf("Get container info error %v", err)
 			continue
 		}
 		containers = append(containers, tmpContainer)
@@ -58,7 +58,7 @@ func ListContainers() {
 			item.CreatedTime)
 	}
 	if err := w.Flush(); err != nil {
-		glog.Errorf("Flush error %v", err)
+		log.Errorf("Flush error %v", err)
 		return
 	}
 }

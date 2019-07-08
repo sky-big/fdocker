@@ -8,7 +8,7 @@ import (
 	"github.com/sky-big/fdocker/container/config"
 	"github.com/sky-big/fdocker/container/manager"
 
-	"github.com/golang/glog"
+	log "github.com/Sirupsen/logrus"
 	"github.com/urfave/cli"
 )
 
@@ -29,23 +29,23 @@ var StopCommand = cli.Command{
 func stopContainer(containerName string) {
 	containerInfo, err := manager.GetContainerInfoByName(containerName)
 	if err != nil {
-		glog.Errorf("Get container %s info error %v", containerName, err)
+		log.Errorf("Get container %s info error %v", containerName, err)
 		return
 	}
 	pidInt, err := strconv.Atoi(containerInfo.Pid)
 	if err != nil {
-		glog.Errorf("Conver pid from string to int error %v", err)
+		log.Errorf("Conver pid from string to int error %v", err)
 		return
 	}
 
 	if err := syscall.Kill(pidInt, syscall.SIGKILL); err != nil {
-		glog.Errorf("Stop container %s error %v", containerName, err)
+		log.Errorf("Stop container %s error %v", containerName, err)
 	}
 
 	containerInfo.Status = config.STOP
 	containerInfo.Pid = " "
 	err = manager.UpdateContainerInfo(containerInfo)
 	if err != nil {
-		glog.Errorf("Update container info %v error %v", containerInfo, err)
+		log.Errorf("Update container info %v error %v", containerInfo, err)
 	}
 }

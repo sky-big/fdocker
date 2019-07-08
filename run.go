@@ -18,7 +18,7 @@ import (
 	fvolume "github.com/sky-big/fdocker/container/volume"
 	"github.com/sky-big/fdocker/network"
 
-	"github.com/golang/glog"
+	log "github.com/Sirupsen/logrus"
 	"github.com/urfave/cli"
 )
 
@@ -100,7 +100,7 @@ var RunCommand = cli.Command{
 			CpuSet:      context.String("cpuset"),
 			CpuShare:    context.String("cpushare"),
 		}
-		glog.Infof("createTty %v", createTty)
+		log.Infof("createTty %v", createTty)
 		containerName := context.String("name")
 		volume := context.String("v")
 		network := context.String("net")
@@ -127,23 +127,23 @@ func Run(tty bool, comArray []string, res *subsystems.ResourceConfig, containerN
 		containerName = containerID
 	}
 
-	glog.Infof("parent %s starting", containerName)
+	log.Infof("parent %s starting", containerName)
 
 	parent := container.NewParentProcess(tty, containerName, volume, imageName, user, envSlice)
 	if parent == nil {
-		glog.Errorf("New parent process error")
+		log.Errorf("New parent process error")
 		return
 	}
 
 	if err := parent.Start(); err != nil {
-		glog.Error(err)
+		log.Error(err)
 	}
 
 	// use containerID as cgroup name
 	cgroupManager := cgroups.NewCgroupManager(containerID)
 	cgroupManager.Set(res)
 	if err := cgroupManager.Apply(parent.Process.Pid); err != nil {
-		glog.Error(err)
+		log.Error(err)
 	}
 
 	ipStr := ""
@@ -157,7 +157,7 @@ func Run(tty bool, comArray []string, res *subsystems.ResourceConfig, containerN
 			PortMapping: portmapping,
 		}
 		if ip, err := network.Connect(nw, containerInfo); err != nil {
-			glog.Errorf("Error Connect Network %v", err)
+			log.Errorf("Error Connect Network %v", err)
 			return
 		} else {
 			ipStr = ip
@@ -167,16 +167,16 @@ func Run(tty bool, comArray []string, res *subsystems.ResourceConfig, containerN
 	// record container info
 	err := manager.SaveContainerInfo(parent.Process.Pid, comArray, containerName, containerID, volume, ipStr, nw)
 	if err != nil {
-		glog.Errorf("Record container info error %v", err)
+		log.Errorf("Record container info error %v", err)
 		return
 	}
 
-	glog.Infof("parent %s store meta data success", containerName)
+	log.Infof("parent %s store meta data success", containerName)
 
 	// record init process run command
 	err = saveInitCommand(containerName, comArray)
 	if err != nil {
-		glog.Warningf("parent process save init command error : %v", err)
+		log.Warningf("parent process save init command error : %v", err)
 		return
 	}
 
@@ -191,24 +191,24 @@ func Run(tty bool, comArray []string, res *subsystems.ResourceConfig, containerN
 
 func saveInitCommand(containerName string, comArray []string) error {
 	command := strings.Join(comArray, " ")
-	glog.Infof("command all is %s", command)
+	log.Infof("command all is %s", command)
 
 	filePath := fmt.Sprintf(config.DefaultInfoLocation, containerName) + config.InitCommandFile
 	filePathBack := filePath + ".bk"
 	f, err := os.Create(filePathBack)
 	if err != nil {
-		glog.Warningf("save init command create file error : %v", err)
+		log.Warningf("save init command create file error : %v", err)
 		return err
 	}
 
 	_, err = io.WriteString(f, command)
 	if err != nil {
-		glog.Warningf("save init command write error : %v", err)
+		log.Warningf("save init command write error : %v", err)
 		return err
 	}
 
 	if err := os.Rename(filePathBack, filePath); err != nil {
-		glog.Warningf("change filename(%s) to filename(%s) err: %s", filePathBack, filePath, err.Error())
+		log.Warningf("change filename(%s) to filename(%s) err: %s", filePathBack, filePath, err.Error())
 		return err
 	}
 

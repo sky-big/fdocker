@@ -4,7 +4,7 @@ import (
 	"flag"
 	"os"
 
-	"github.com/golang/glog"
+	log "github.com/Sirupsen/logrus"
 	"github.com/urfave/cli"
 )
 
@@ -37,6 +37,6 @@ func main() {
 	}
 
 	if err := app.Run(os.Args); err != nil {
-		glog.Warningf("fdocker run error : ", err)
+		log.Warningf("fdocker run error : ", err)
 	}
 }
