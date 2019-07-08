@@ -86,10 +86,8 @@ func CreateMountPoint(containerName, imageName string) error {
 	}
 	tmpWriteLayer := config.WritePath + containerName
 	tmpImageLocation := config.Root + imageName
-	mntURL := config.MntPath + containerName
 	dirs := "dirs=" + tmpWriteLayer + ":" + tmpImageLocation
-	log.Infof("-------------:%v, %v", dirs, mntURL)
-	_, err := exec.Command("mount", "-t", "aufs", "-o", dirs, "none", mntURL).CombinedOutput()
+	_, err := exec.Command("mount", "-t", "aufs", "-o", dirs, "none", mntUrl).CombinedOutput()
 	if err != nil {
 		log.Errorf("Run command for creating mount point failed %v", err)
 		return err
@@ -112,11 +110,14 @@ func DeleteWorkSpace(volume, containerName string) {
 
 func DeleteMountPoint(containerName string) error {
 	mntURL := config.MntPath + containerName
-	_, err := exec.Command("umount", mntURL).CombinedOutput()
-	if err != nil {
-		log.Errorf("Unmount %s error %v", mntURL, err)
-		return err
+	for i := 0; i < 2; i++ {
+		_, err := exec.Command("umount", "-f", "-v", mntURL).CombinedOutput()
+		if err != nil {
+			log.Errorf("Unmount %s error %v", mntURL, err)
+			return err
+		}
 	}
+
 	if err := os.RemoveAll(mntURL); err != nil {
 		log.Errorf("Remove mountpoint dir %s error %v", mntURL, err)
 		return err

@@ -5,7 +5,7 @@ init:
 	fdocker network create --driver bridge --subnet 192.168.0.0/16 test
 
 run:
-	fdocker run --ti --name test1 --net test -m 128m --images $(shell dirname $(shell pwd)/$(lastword $(MAKEFILE_LIST)))/images/ busybox /bin/sh
+	fdocker run --ti --name test --net test -m 128m --images $(shell dirname $(shell pwd)/$(lastword $(MAKEFILE_LIST)))/images/ busybox /bin/sh
 
 clean:
 	# stop fdocker
