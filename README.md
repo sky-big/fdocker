@@ -4,9 +4,13 @@ fdocker is a simple container runc implementation in go
 
 # QuickStart
 
-1. make init
+1. make sure operation system have aufs filesystem
 
-2. make run
+```
+make init
+
+make run
+```
 
 # Usage
 
@@ -60,3 +64,7 @@ OPTIONS:
    -u value          user command owner
    --images value    image store path
 ```
+
+# Links
+
+1. https://github.com/xianlubird/mydocker
