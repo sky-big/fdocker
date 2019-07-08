@@ -73,7 +73,7 @@ var RunCommand = cli.Command{
 		},
 		cli.StringFlag{
 			Name:  "images",
-			Usage: "image store path",
+			Usage: "image store path(image tar package)",
 		},
 	},
 	Action: func(context *cli.Context) error {
