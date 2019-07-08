@@ -1,6 +1,6 @@
 # Introduction
 
-fdocker is a container runc implementation in go
+fdocker is a simple container runc implementation in go
 
 # QuickStart
 
